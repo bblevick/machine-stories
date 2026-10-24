@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-24T23:53:47.509Z",
+  "context": "Fresh Git clone, npm ci, repository-base production build",
+  "url": "http://127.0.0.1:4301/machine-stories/",
+  "errors": [],
+  "failed": [],
+  "externalRequests": [],
+  "passed": true
+}
