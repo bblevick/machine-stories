@@ -1,19 +1,15 @@
-# Publishing Machine Stories
+# Publishing Afterthought
 
 Repository: https://github.com/bblevick/machine-stories
-Verified Pages URL: https://bblevick.github.io/machine-stories/
+Pages: https://bblevick.github.io/machine-stories/
 
-The `Verify and publish` workflow checks the code, installs Chromium/WebKit, runs browser tests, and builds with `BASE_PATH=/machine-stories/`. Pull requests verify without deploying. Pushes to main or manual workflow dispatch deploy after verification. Repository Pages settings must select **GitHub Actions** as the source.
+The `Verify and publish` workflow runs type/model/HTTP-bridge/browser checks, then builds with `BASE_PATH=/machine-stories/` and deploys through GitHub Actions. The published site is the standalone notebook, diagram editor and whiteboard. The Node bridge and any credentials are not deployed. Live Hermes work is a separate local setup dependency.
 
-For a local deployment-path check:
+To reproduce the repository path locally:
 
 ```sh
 BASE_PATH=/machine-stories/ npm run build
 BASE_PATH=/machine-stories/ npm run preview
 ```
 
-Open the printed preview origin followed by `/machine-stories/`. Repositories contain original public portfolio code and redistributable assets. Keep environment files, credentials, raw test captures, and build output out of Git.
-
-Profile pins are managed through GitHub’s profile UI. Publishing and pinning are separate actions; verify both instead of inferring pins from repository creation.
-
-Published October 24, 2026. [First successful verification and deployment](https://github.com/bblevick/machine-stories/actions/runs/40144616619). The public demo passed actual browser interactions with no page errors, failed requests or external application requests; see `public-release-check.json`. All five repositories were pinned on the profile, with Tiny City Lab first.
+Visit the preview origin followed by `/machine-stories/`. Production/public browser evidence files identify the checked version and explicitly record the unconfigured agent boundary. All five portfolio repositories remain pinned; Afterthought replaces the earlier exhibit at the existing Machine Stories URL.

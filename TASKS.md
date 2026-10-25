@@ -1,51 +1,12 @@
-# Machine Stories — bounded implementation tickets
+# Afterthought v2 bounded tickets
 
-## Instruction for the implementing model
+Implement the next uncompleted ticket. Read SPEC.md and existing code. Preserve the model/run contracts and locked dependencies. Run actual checks and distinguish contract fixtures from live execution. Never substitute canned replies for a missing agent.
 
-Implement only the next uncompleted ticket. Read SPEC.md and existing code first. Preserve documented interfaces. Do not add out-of-scope features or dependencies. Run the ticket checks and relevant existing checks. Report changed behavior, evidence, and unresolved failures. Report a missing dependency or inconsistent specification explicitly; do not substitute simulated behavior for a required capability.
+- [x] B1 — Bounded board model, local persistence, import validation and undo snapshots. Check `npm test` on transfer, invalid geometry and independent copies.
+- [x] B2 — Original corkboard: sticky notes, movable pins, editing, colors, selection, exports and responsive forms. Check `npm run test:e2e` for notes/reload/undo.
+- [x] B3 — Native SVG architecture/storyboard tool, labels, directed links, templates, dragging and keyboard editing. Check `npm run test:e2e` and SVG export.
+- [x] B4 — Portrait freehand ink, pressure/coalesced samples, single active pen/touch pointer, vector eraser, incremental draw, undo/export and expand. Check `npm run test:e2e`; synthetic pressure is not physical iPad verification.
+- [x] B5 — Real Hermes Runs API bridge and setup guide, server-held credentials, explicit submission/context, idempotency recovery, receipt polling/reply dedup and honest terminal states. Check `npm run test:bridge && npm test`; external model execution needs user configuration.
+- [ ] B6 — Current media, documentation, clean clone/type/unit/bridge/browser/build checks, production path, public deployment and verified live URL. `npm run typecheck && npm test && npm run test:bridge && npm run test:e2e && BASE_PATH=/machine-stories/ npm run build`; `npm run demo:capture`.
 
-Tickets are ordered; each depends on the preceding ticket. Check marks record implemented work; release and device evidence are tracked separately in docs/VERIFICATION.md.
-
-## [x] M1 — Analytical mechanism math
-
-No browser dependency. Implement sampleMechanism(config, phase), config validation, and beltPoint. Verify reverse gear ratios, fixed connecting-rod length, stroke endpoints, equal pulley speed, and belt path continuity.
-
-Verification: `npm test`.
-
-## [x] M2 — Gear exhibit vertical slice
-
-Build gear geometry once per config; drive transforms from absolute phase. Add orbit, zoom, pause, and cycle scrubbing. Verify no accumulated rotation drift.
-
-Verification: `npm run typecheck && npm run test:e2e`.
-
-## [x] M3 — Crank and belt geometry
-
-Reuse the pose contract. Dispose geometry/materials when changing mechanisms. Advance belt markers along the entire closed path.
-
-Verification: `npm test && npm run build`.
-
-## [x] M4 — Part inspection and separation
-
-Support raycast selection and equivalent part buttons. Apply exploded offsets independently from physical poses. Preserve the phase while inspecting.
-
-Verification: `npm run test:e2e`.
-
-## [x] M5 — Guided tour and PNG
-
-Use guideAt for the 20-second chapter sequence. Restore enabled manual controls at completion. Capture the actual WebGL canvas.
-
-Verification: `npm run test:e2e`.
-
-## [x] M6 — Presentation and QA
-
-Finish ivory/graphite/orange design, responsive layout, focus states, reduced-motion initial pause, screenshots, video, and native Safari control checks.
-
-Verification: `npm run typecheck && npm test && npm run test:e2e && npm run build`.
-
-## [x] Originality revision
-
-## The Bureau
-
-The Patience Regulator, Second-Wind Engine, and Circular Mailroom turn analytical mechanisms into a small absurd office. Enter a note to place it on real moving 3D stationery. The note stays in browser memory and is not transmitted or saved by the application. Bellows geometry follows the slider; mail follows the full belt path. The metaphors are playful; the kinematics remain analytical.
-
-Verification: `npm run typecheck && npm run test:e2e && npm run build`.
+Fresh-machine follow-up after user installs/configures Hermes: connect, submit a harmless note, verify the actual gateway receipt and pinned final response, reload, and confirm no duplicate run or reply. This is a setup-dependent verification item, not a fake completed run.

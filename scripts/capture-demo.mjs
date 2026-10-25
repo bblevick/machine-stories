@@ -37,25 +37,83 @@ try {
     video = page.video(),
     start = performance.now();
   await page.goto("http://127.0.0.1:4201");
-  await page.waitForFunction(() => Boolean(window.machineStories));
-  await wait(1800);
-  await page.locator("#case-note").fill("A beautifully unfinished idea.");
-  await page.locator("#file-note").click();
-  await page.locator(".exhibit").scrollIntoViewIfNeeded();
-  await wait(6500);
-  await page.locator("#explode").fill("1");
-  await wait(5000);
-  await page.locator("#explode").fill("0");
-  await page.locator('[data-id="gears"]').click();
-  await page.locator("#guide").click();
-  await wait(20500);
-  await page.locator('[data-id="crank"]').click();
-  await page.locator("#play").click();
-  await wait(4500);
-  await page.locator("#radius").fill("1");
-  await wait(3000);
-  await page.locator('[data-id="belt"]').click();
+  await page.waitForFunction(() => Boolean(window.afterthought));
+  await wait(1500);
+  await page.locator(".note-read").first().click();
+  await page.locator("#note-title").fill("A little less noise.");
+  await page
+    .locator("#note-body")
+    .fill(
+      "An inbox that feels like a workbench. What deserves my attention? What can wait here?",
+    );
+  await page.locator('[data-color="blue"]').click();
+  await page.locator(".workspace").first().scrollIntoViewIfNeeded();
+  await wait(4000);
+  await page.locator('[data-mode="diagram"]').click();
+  await page.locator("#architecture").click();
+  await wait(4000);
+  await page.locator("#block-label").fill("A calmer interface");
+  await page
+    .locator("#block-detail")
+    .fill("Capture a thought before it disappears.");
   await wait(3500);
+  await page.locator('[data-mode="whiteboard"]').click();
+  await page.locator("#ink").scrollIntoViewIfNeeded();
+  const box = await page.locator("#ink").boundingBox();
+  for (const points of [
+    [
+      [130, 120],
+      [350, 120],
+      [350, 270],
+      [130, 270],
+      [130, 120],
+    ],
+    [
+      [390, 195],
+      [650, 195],
+    ],
+    [
+      [620, 165],
+      [650, 195],
+      [620, 225],
+    ],
+    [
+      [700, 120],
+      [960, 120],
+      [960, 270],
+      [700, 270],
+      [700, 120],
+    ],
+    [
+      [160, 420],
+      [350, 470],
+      [520, 430],
+      [700, 510],
+      [930, 460],
+    ],
+  ]) {
+    await page.mouse.move(
+      box.x + (points[0][0] * box.width) / 1100,
+      box.y + (points[0][1] * box.height) / 1600,
+    );
+    await page.mouse.down();
+    for (const [x, y] of points.slice(1))
+      await page.mouse.move(
+        box.x + (x * box.width) / 1100,
+        box.y + (y * box.height) / 1600,
+        { steps: 12 },
+      );
+    await page.mouse.up();
+  }
+  await wait(4500);
+  await page.locator("#focus-ink").click();
+  await wait(4000);
+  await page.locator("#focus-ink").click();
+  await page.locator("#setup").click();
+  await wait(7000);
+  await page.locator(".dialog-close").click();
+  await page.locator('[data-mode="board"]').click();
+  await wait(4000);
   await wait(Math.max(0, 51000 - (performance.now() - start)));
 
   await context.close();

@@ -1,89 +1,72 @@
-# Machine Stories — Bureau of Small Machines
+# Afterthought — Machine Stories
 
-File an unfinished thought into a mechanical mailroom that sends it precisely nowhere.
+Leave a thought on a corkboard. Sketch the architecture. Draw the thing you can’t quite explain. When connected to your own Hermes Agent, leave it some homework and receive a response back on the board.
 
-[Open the live demo](https://bblevick.github.io/machine-stories/) · [Watch the 50-second demonstration](docs/media/demo.mp4) · [Build specification](SPEC.md) · [Verification](docs/VERIFICATION.md)
+[Open the notebook](https://bblevick.github.io/machine-stories/) · [50-second walkthrough](docs/media/demo.mp4) · [Specification](SPEC.md) · [Verification](docs/VERIFICATION.md)
 
-![Machine Stories interface](docs/media/overview.png)
+![Afterthought corkboard](docs/media/overview.png)
 
-## The Bureau
+## Three ways to think
 
-The Patience Regulator, Second-Wind Engine, and Circular Mailroom turn analytical mechanisms into a small absurd office. Enter a note to place it on real moving 3D stationery. The note stays in browser memory and is not transmitted or saved by the application. Bellows geometry follows the slider; mail follows the full belt path. The metaphors are playful; the kinematics remain analytical.
+- **Corkboard:** movable sticky notes, colors, brain dumps, local autosave, undo/redo, JSON board transfer and PNG snapshot. Starter notes are explicitly labeled. Notes are sent only by clicking the Hermes button.
+- **Diagram:** movable process/decision/database/storyboard blocks, directed and labeled connectors, architecture/storyboard starters, keyboard editing and SVG export.
+- **Whiteboard:** a portrait 1100×1600 paper page for mouse, touch or pen. Pressure-sensitive strokes, coalesced pointer samples, vector eraser, ink weight/color, undo, PNG export, and an expanded view. Touch can be disabled while using a pen. Unrelated palm/touch pointers cannot finish the active pen stroke. Real iPad/Pencil hardware remains untested.
 
-## What you can do
+No application framework, drawing service, font CDN, accounts or API keys for the notebook. Original HTML/CSS/SVG/Canvas. Boards save to this browser on this device; they are not cloud-synced. Export a JSON copy for another device or a backup.
 
-- Three procedural mechanisms: spur gears, slider–crank, and equal-pulley belt drive.
-- Orbit and zoom, pause and cycle scrubbing, adjustable parameters, exploded views, and keyboard-accessible part inspection.
-- A 20-second guided tour that returns control to the visitor, plus PNG export.
+## Run the notebook
 
-## Run locally
-
-Use Node 24 LTS (`.nvmrc`) and npm. No API keys, accounts, or application backend are required.
+Node 24 LTS and npm:
 
 ```sh
 npm ci
 npm run dev
-```
-
-Open the local URL Vite prints. Downloads are needed for dependencies and initial asset preparation; application computation stays in the browser.
-
-```sh
 npm run typecheck
 npm test
+npm run test:bridge
 npx playwright install chromium webkit
 npm run test:e2e
 npm run build
 npm run preview
 ```
 
-## How it works
+## Connect your own Hermes Agent
 
-**Three.js · TypeScript · Vite**
+Hermes is **not installed or bundled** in this repository. No live agent run has been claimed for this machine. The UI has a setup guide and stays disconnected until your real gateway is available. API-contract tests use explicitly named fixtures, not an invented live agent.
+
+1. Install Hermes using its [official installation guide](https://hermes-agent.nousresearch.com/docs/getting-started/installation), then run `hermes setup` to choose your model provider and tools. Provider credentials, permissions and any charges belong to that separate setup.
+2. Enable its [API server](https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server): set `API_SERVER_ENABLED=true` and a strong `API_SERVER_KEY` in your Hermes configuration; start `hermes gateway`.
+3. In this repository, copy `.env.example` to `.env.local`. Set `HERMES_API_KEY` to the same gateway key. The default `HERMES_URL` is `http://127.0.0.1:8642`.
+4. Run `npm run board`, open **http://127.0.0.1:4198/**, then choose **Hermes → Check local connection**.
+
+The bridge binds only to 127.0.0.1:8766 and holds the credential server-side. It forwards only the documented Hermes run endpoints through Vite. The published Pages notebook never tries to contact your local machine. Your note and selected attachments go through your configured Hermes provider/tools only when you explicitly send them.
+
+Hermes receives the selected note and, if checked, the diagram text/links or whiteboard stroke coordinates. Stroke coordinates are **not handwriting recognition or image understanding**. No automatic whole-board upload. No credential in a `VITE_` variable, local storage, bundle or export.
+
+## What happens while Hermes works
 
 ```mermaid
 flowchart LR
-    A[Input] --> B[Pure logic]
-    B --> C[Renderer]
-    B --> D[Portable output]
+  N[Selected note + checked context] --> B[Local credential bridge]
+  B --> R[Hermes durable run]
+  R --> P[Poll the saved run receipt]
+  P --> C[Pin one response onto the corkboard]
 ```
 
-Controls → bounded mechanism config → analytical poses → procedural Three.js scene.
+The request snapshot and random idempotency key save before submission. A lost creation response can be recovered with that same key and payload; the board never silently submits a fresh task. Run IDs survive reloads. Each completed run can create one linked response note; repeated polls do not duplicate it. Polling resumes after reconnecting locally. The original note stays intact.
 
-## Mechanism interface
+Failed, cancelled, interrupted, unknown and partial states remain distinct. A stop request stays **stopping** until the gateway confirms a terminal state. A missing final response is not marked successful. Approvals/clarifications and unknown-execution recovery belong in Hermes’s own interface; the board never auto-approves tool calls. Gateway retention and idempotency limits still apply; this is not a global exactly-once guarantee.
 
-`MechanismConfig` selects `gears | crank | belt`. Ratios are 1, 2, or 3; crank radius is 0.4–1; rod length is 1.5–3.5 and exceeds radius; pulley spacing is 2.2–4.5; speed is 0.25–2. Units are illustrative scene units. Phase is measured in input revolutions.
+## Architecture and limits
 
-`sampleMechanism` returns named `{x, y, angle}` part poses, with angles in radians. Gear centers are separated by summed pitch radii. Driven angle is the negative input angle divided by ratio, plus a fixed assembly offset. Slider position is `r cos θ + sqrt(L² − r² sin² θ)`. Belt markers traverse two straight spans and two semicircles.
+`src/board/model.ts` defines bounded board data, snapshots, validation and run reconciliation. `drawing.ts` renders original SVG, paper ink and PNG snapshots. `main.ts` handles the three interfaces, pointer input, local persistence and run polling. `server/bridge.mjs` is a small allowlisted local HTTP proxy; no agent framework, shell execution or hosted agent service.
 
-`Exhibit.renderAt(timeMs, viewState)` combines config, phase, exploded offset, and guided-tour state. Time is supplied through phase in `viewState`; render calls do not advance simulation. `window.machineStories` exposes deterministic capture helpers used by browser checks and media scripts.
+80 notes, 50 diagram blocks, 100 connectors, 500 strokes, 100,000 ink points, 3 MB board files. Replies preserve up to 20,000 characters. Undo history is session-local (20 snapshots); current content persists. Run receipts are kept across undo so a UI edit does not forget active work. Exported PNG snapshots are visual summaries; JSON is the complete editable board. No real-time collaboration, multi-user hosting, remote gateway exposure, OCR, or native Apple Pencil guarantee.
 
-## Controls
+## How this was built with AI
 
-Space toggles play, arrows scrub, E toggles separation, and G starts the tour when focus is outside a control. Visible part buttons provide keyboard equivalents for clicking geometry. The Reset button restores the default gear exhibit and pauses it.
+The original Machine Stories was a procedural machine exhibit. Ben redirected it: “sticky notes or personal brain dumps I can add to a cork board” with an agent that responds on the board, plus architecture/storyboard and iPad whiteboard tools. The original exhibit remains in Git history; the current app follows that new direction.
 
-## How I built this with AI
+Codex implemented the board, vector/drawing tools, bridge and tests from those instructions. API documentation changed the integration choice: durable Hermes Runs receipts fit asynchronous board responses better than pretending a chat message proves work completed. Browser checks exposed pointer-capture limitations for synthetic fixtures and floating-point pressure values; both are handled explicitly. The original proof media has been replaced by actual current-interface screenshots/video. No screenshots or demo responses are labeled as a live Hermes execution.
 
-Ben selected the project mix, approved the scope, and set the free/local and smaller-model handoff constraints. Codex generated and iterated the implementation, tests, documentation, and demo tooling from that approved brief. This repository is an AI-assisted build; it does not imply that every line was hand-written by Ben.
-
-The development workflow separated pure logic from rendering, used bounded tickets, exercised browser behavior, and corrected failures found during verification. See [BUILD_LOG.md](BUILD_LOG.md) for actual fixes and [TASKS.md](TASKS.md) for the implementation sequence. The app uses deterministic runtime logic; AI assisted development rather than live generation.
-
-## Recreate the demonstration
-
-```sh
-# Requires FFmpeg on PATH and Playwright Chromium installed.
-npm run demo:capture
-```
-
-This records a scripted, real browser walkthrough and creates `docs/media/demo.mp4`. It uses a temporary local port (4201) and requires approximately one minute. Raw captures stay in ignored `.artifacts/`. The demonstration has no narration or audio track.
-
-## Limits
-
-Simplified educational geometry. Gear teeth are illustrative; no manufacturing tolerances, contact forces, CAD import, or physical collision solver. The gear pair returns to its complete joint pose after the larger gear’s ratio of input revolutions.
-
-[Measured local performance](docs/performance.json) reports a bounded headless-browser frame-scheduling sample, not a guarantee across devices.
-
-## Deployment and license
-
-GitHub Actions runs unit/browser checks, builds with the repository base path, and deploys to GitHub Pages. See [Publishing](docs/PUBLISHING.md).
-
-Original code: [MIT](LICENSE). Bundled third-party code, models, and source data retain their own terms; see [notices](THIRD_PARTY_NOTICES.md).
+See [BUILD_LOG.md](BUILD_LOG.md) and [TASKS.md](TASKS.md). Recreate media with `npm run demo:capture` (FFmpeg required). Original code/assets are [MIT licensed](LICENSE); [notices](THIRD_PARTY_NOTICES.md).

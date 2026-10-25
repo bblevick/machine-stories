@@ -1,7 +1,7 @@
-export const $ = <T extends HTMLElement = HTMLElement>(id: string) => {
+export const $ = <T extends Element = HTMLElement>(id: string) => {
   const node = document.getElementById(id);
   if (!node) throw new Error(`Missing element: ${id}`);
-  return node as T;
+  return node as unknown as T;
 };
 export function download(data: Blob | string, name: string) {
   const url = typeof data === "string" ? data : URL.createObjectURL(data);

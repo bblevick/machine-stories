@@ -1,45 +1,31 @@
-# Machine Stories — implementation specification
+# Afterthought v2 — a personal board for ideas and Hermes tasks
 
-## Goal and audience
+## Product and design
 
-A recruiter can understand the result in 30 seconds, try it without an account, and inspect a reproducible, compact AI-assisted implementation. The application is a standalone static browser project; it uses no paid service or application backend.
+Replace the machine exhibit with an original corkboard notebook and a real Hermes gateway frontend. Three modes: corkboard, diagram, portrait whiteboard. Design thesis: a quiet analog studio for unfinished thoughts. Cream/forest/rust; cork grain and paper edges; serif ideas against small archival labels. Signature: a real returned agent response pinned beside a thought. Avoid a generic chat box or fake progress/replies.
 
-## Required behavior
+## Data contracts
 
-- Three procedural mechanisms: spur gears, slider–crank, and equal-pulley belt drive.
-- Orbit and zoom, pause and cycle scrubbing, adjustable parameters, exploded views, and keyboard-accessible part inspection.
-- A 20-second guided tour that returns control to the visitor, plus PNG export.
+`Board` version 2: ID/title, notes, diagram nodes/edges, strokes, updatedAt. `Note`: ID/title/body/color/x/y/rotation/kind, optional source/run receipt and AgentTask. `AgentTask`: immutable sent input, random idempotency key, run ID/status, timestamps and error. `DiagramNode`: label/detail/shape/x/y; `DiagramEdge`: source/destination/label. `Stroke`: color/width and normalized pressure points in a fixed 1100×1600 page.
 
-## Mechanism interface
+All calculation/state validation in `model.ts`, rendering in `drawing.ts`, interface/pointer/storage/bridge client in `main.ts`. No application framework. HTML native inputs, SVG vectors, Canvas ink. Old exhibit recoverable from Git history; Three.js is no longer a runtime dependency.
 
-`MechanismConfig` selects `gears | crank | belt`. Ratios are 1, 2, or 3; crank radius is 0.4–1; rod length is 1.5–3.5 and exceeds radius; pulley spacing is 2.2–4.5; speed is 0.25–2. Units are illustrative scene units. Phase is measured in input revolutions.
+## Notebook behavior
 
-`sampleMechanism` returns named `{x, y, angle}` part poses, with angles in radians. Gear centers are separated by summed pitch radii. Driven angle is the negative input angle divided by ratio, plus a fixed assembly offset. Slider position is `r cos θ + sqrt(L² − r² sin² θ)`. Belt markers traverse two straight spans and two semicircles.
+80 notes; create/edit/move/color/remove, 20-snapshot undo/redo, browser autosave and explicit JSON export/import (3 MB). No cloud sync or automatic uploads. Note source text and completed response text stay separate. Initial content clearly labeled Starter note. PNG summary export; editable JSON is authoritative. Clear errors for quota/corrupt input; never inject untrusted HTML.
 
-`Exhibit.renderAt(timeMs, viewState)` combines config, phase, exploded offset, and guided-tour state. Time is supplied through phase in `viewState`; render calls do not advance simulation. `window.machineStories` exposes deterministic capture helpers used by browser checks and media scripts.
+Diagram: 50 blocks, 100 directed labeled links, process/decision/database/frame shapes, architecture and storyboard starters only for empty canvas, drag and keyboard form/nudge controls. Remove nodes with incident links. Native SVG download.
 
-## Controls
+Whiteboard: 500 strokes and 100,000 points total; pressure + coalesced events, single active pointer, reject unrelated touch during pen input, disable-touch option, incremental ink rendering, whole-stroke eraser, undo, ink color/weight, PNG and expanded portrait page. Cancel/blur finishes the active stroke. No OCR; attachments are coordinates. No assertion of real iPad/Pencil testing.
 
-Space toggles play, arrows scrub, E toggles separation, and G starts the tour when focus is outside a control. Visible part buttons provide keyboard equivalents for clicking geometry. The Reset button restores the default gear exhibit and pauses it.
+## Hermes integration
 
-## Architecture and presentation
+Optional local Node bridge on 127.0.0.1:8766; Vite notebook at 4198. Fresh install is disconnected. `.env.local` holds HERMES_URL (loopback only) and HERMES_API_KEY (never VITE_, client storage, exports or source). Setup points to official installer/provider configuration/API enablement. No automatic installation, paid provider use or execution. Hosted demo has no loopback access or agent simulation.
 
-Controls → bounded mechanism config → analytical poses → procedural Three.js scene.
+Bridge allows GET health, POST runs, GET run status, POST run stop. Host allowlist; mutations require expected local Origin, JSON and random bridge token. Upstream credential is server-side. Payload cap 450 KB; input 100,000 chars; 20 s forwarding timeout, no automatic execution retry, no redirects. Idempotency key forwarded to Hermes. Current API reference: https://hermes-agent.nousresearch.com/docs/user-guide/features/api-server .
 
-An engineering museum exhibit: ivory paper, graphite mechanisms, burnt-orange motion. Georgia display type contrasts with Trebuchet control labels. The signature element is a procedural machine that separates while retaining its analytical motion.
+Send only selected note plus explicitly checked diagram/strokes. Save request snapshot before submission. Poll actual run receipt every 2.5 seconds when visible/connected. Reconnect resumes receipt polling; a missing creation receipt uses explicit recovery with the same key/input. Completed nonempty output pins one linked reply per run ID, at most 20,000 chars. Partial/incomplete output labeled partial. Cancelled/failed/interrupted/unknown/approval/input/stopping statuses are preserved. A request to stop is not cancellation completion. Missing final text never becomes success. The board never answers approval or clarification controls automatically; use Hermes UI. Active run notes cannot be removed/import-replaced. Undo must preserve known run receipts. No guarantee beyond upstream retention/idempotency semantics.
 
-Keep logic, rendering, I/O, and interface orchestration separate. Use the exact locked dependencies. Test Chrome/Chromium first, WebKit for automated compatibility, and native Safari for visible control checks. Support keyboard focus, viewport resizing, visible errors, reset, and reduced motion. Only measured or directly verified behavior may be described as validated.
+## Acceptance and boundaries
 
-## Exclusions
-
-Simplified educational geometry. Gear teeth are illustrative; no manufacturing tolerances, contact forces, CAD import, or physical collision solver. The gear pair returns to its complete joint pose after the larger gear’s ratio of input revolutions.
-
-## Acceptance
-
-Run type checking, unit tests, browser tests, and a production build. Verify project-base asset paths with the built output. Inspect three screenshots and a 50-second video. Record source/model notices and actual verification results. A public URL is considered live only after an HTTP check and a browser smoke check.
-
-## Originality revision requested by the user
-
-## The Bureau
-
-The Patience Regulator, Second-Wind Engine, and Circular Mailroom turn analytical mechanisms into a small absurd office. Enter a note to place it on real moving 3D stationery. The note stays in browser memory and is not transmitted or saved by the application. Bellows geometry follows the slider; mail follows the full belt path. The metaphors are playful; the kinematics remain analytical.
+Type checking, six board-model tests, five actual local HTTP bridge contract tests, six scenarios in Chromium/WebKit (12 runs), responsive layout, keyboard forms, explicit synthetic pressure fixture, real disconnected bridge check, production repository-path check, clean clone build, current screenshots and 50-second walkthrough, public Pages verification. A configured Hermes provider is absent on this machine: actual model/tool execution is a remaining setup dependency, not an established test result.

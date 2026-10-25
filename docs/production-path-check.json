@@ -1,9 +1,10 @@
 {
-  "checkedAt": "2026-10-24T23:54:24.664Z",
-  "context": "Fresh Git clone, npm ci, repository-base production build",
-  "url": "http://127.0.0.1:4301/machine-stories/",
+  "checkedAt": "2026-10-25T00:31:20.376Z",
+  "version": 2,
+  "url": "http://127.0.0.1:4313/machine-stories/",
   "errors": [],
   "failed": [],
   "externalRequests": [],
-  "passed": true
+  "passed": true,
+  "agentExecution": "Not tested: Hermes/provider not installed. Public notebook remains disconnected."
 }
