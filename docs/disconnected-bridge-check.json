@@ -1,5 +1,6 @@
 {
   "connected": false,
   "configured": false,
-  "message": "Hermes is not configured. Set HERMES_API_KEY in .env.local, enable the Hermes API server, then start the local board."
+  "message": "Hermes is not configured. Set HERMES_API_KEY in .env.local, enable the Hermes API server, then start the local board.",
+  "throughViteProxy": true
 }

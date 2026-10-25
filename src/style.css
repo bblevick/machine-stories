@@ -576,10 +576,11 @@ aside p.privacy-note {
   display: block;
   width: 1600px;
   height: 1100px;
-  touch-action: none;
+  touch-action: pan-x pan-y;
   user-select: none;
 }
 .diagram-viewport svg [data-node] {
+  touch-action: none;
   cursor: grab;
 }
 .diagram-viewport svg [data-edge] {
@@ -977,4 +978,10 @@ dialog a {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+.diagram-viewport svg.fit {
+  width: 100%;
+  min-width: 640px;
+  height: auto;
 }
