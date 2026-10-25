@@ -63,10 +63,6 @@ Failed, cancelled, interrupted, unknown and partial states remain distinct. A st
 
 80 notes, 50 diagram blocks, 100 connectors, 500 strokes, 100,000 ink points, 3 MB board files. Replies preserve up to 20,000 characters. Undo history is session-local (20 snapshots); current content persists. Run receipts are kept across undo so a UI edit does not forget active work. Exported PNG snapshots are visual summaries; JSON is the complete editable board. No real-time collaboration, multi-user hosting, remote gateway exposure, OCR, or native Apple Pencil guarantee.
 
-## How this was built with AI
-
-The original Machine Stories was a procedural machine exhibit. Ben redirected it: “sticky notes or personal brain dumps I can add to a cork board” with an agent that responds on the board, plus architecture/storyboard and iPad whiteboard tools. The original exhibit remains in Git history; the current app follows that new direction.
-
-Codex implemented the board, vector/drawing tools, bridge and tests from those instructions. API documentation changed the integration choice: durable Hermes Runs receipts fit asynchronous board responses better than pretending a chat message proves work completed. Browser checks exposed pointer-capture limitations for synthetic fixtures and floating-point pressure values; both are handled explicitly. The original proof media has been replaced by actual current-interface screenshots/video. No screenshots or demo responses are labeled as a live Hermes execution.
+## Documentation and demonstration
 
 See [BUILD_LOG.md](BUILD_LOG.md) and [TASKS.md](TASKS.md). Recreate media with `npm run demo:capture` (FFmpeg required). Original code/assets are [MIT licensed](LICENSE); [notices](THIRD_PARTY_NOTICES.md).
